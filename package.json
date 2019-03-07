@@ -17,7 +17,10 @@
   },
   "homepage": "https://github.com/fdiaz79/bamazon#readme",
   "dependencies": {
+    "fuzzy": "^0.1.3",
     "inquirer": "^6.2.2",
+    "inquirer-autocomplete-prompt": "^1.0.1",
+    "lodash": "^4.17.11",
     "mysql": "^2.16.0"
   }
 }
