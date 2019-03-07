@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var cTable = require("console.table");
 var _ = require("lodash");
 var fuzzy = require("fuzzy");
 
@@ -18,12 +19,12 @@ var departmentArray = [];
 
 connection.connect( err => {
     if(err) throw(err);
-    console.log("************ WELCOME TO BAMAZON ************");
-    console.log("************ Manager Application ************");
+    console.log("\n************ WELCOME TO BAMAZON ************");
     mainManagerMenu();    
 });
 
 function mainManagerMenu (){
+    console.log("\n************ Manager Application ************\n");
     inquirer.prompt({
         name : "managerAction",
         type : "list",
@@ -48,12 +49,14 @@ function mainManagerMenu (){
 function products(condition){
     connection.query("SELECT * FROM products"+condition, (err, results) => {
         if(err) throw(err);
+        var table = cTable.getTable(results);
         console.log("\n************* List of Products ************* \n");
-        console.log("Code | Product | Price | Available stock");
-        for (var i = 0; i < results.length; i++){
-            console.log(results[i].item_id + " | " + results[i].product_name + " | $" + results[i].price + " | " + results[i].stock_quantity);
-        }
-        console.log("\n*************************\n");
+        console.log(table);
+        // console.log("Code | Product | Price | Available stock");
+        // for (var i = 0; i < results.length; i++){
+        //     console.log(results[i].item_id + " | " + results[i].product_name + " | $" + results[i].price + " | " + results[i].stock_quantity);
+        // }
+        // console.log("\n*************************\n");
         mainManagerMenu();
     });
 };
@@ -197,7 +200,6 @@ function newProduct(){
             console.log("\n"+results.affectedRows + " product quantity added.\n");
             mainManagerMenu();
         })
-        console.log("Add New Product");
     });
 };
 

@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var cTable = require("console.table");
 
 var connection = mysql.createConnection({
     host : "localhost",
@@ -14,18 +15,17 @@ connection.connect (function(err) {
     displayStock();
 
 });
-var productCount = 0;
+var productIdArr = [];
 function displayStock() {
-    connection.query("SELECT * FROM products", function(err, results) {
+    connection.query("SELECT item_id, product_name, price  FROM products", function(err, results) {
         if(err) throw(err);
-        productCount = results.length;
-        console.log("\n************ WELCOME TO BAMAZON ************");
-        console.log("************* List of Products *************\n");
-        console.log("Code | Product | Price");
-        for (var i = 0; i < productCount; i++){
-            console.log(results[i].item_id + " | " + results[i].product_name + " | $" + results[i].price);
+        for (var i = 0; i < results.length; i++){
+            productIdArr.push(results[i].item_id);            
         }
-        console.log("");
+        console.log("\n************ WELCOME TO BAMAZON ************");
+        console.log("\n************* List of Products *************\n");
+        var table = cTable.getTable(results);
+        console.log(table);
         askCustomer();
     });
 }
@@ -43,11 +43,17 @@ function askCustomer() {
             message : "How many do you want?"
         }
     ]).then(function(answer) {
-        var itemId = answer.itemToBuy;
+        var itemId = parseInt(answer.itemToBuy);
         var quantity = parseInt(answer.quantity);
         var toPay;
-        if(isNaN(itemId) || itemId < 1 || itemId > productCount) {
-            console.log("\nItem desconocido. Please select one code from the list.\n");
+        var idNotFound = true;
+        for (var i = 0; i < productIdArr.length; i++){
+            if (productIdArr[i] == itemId){
+                idNotFound = false;
+            }
+        }
+        if(isNaN(itemId) || idNotFound) {
+            console.log("\nUnknown Item. Please select one code from the list.\n");
             return displayStock();
         };
         if(isNaN(quantity)){
@@ -64,7 +70,8 @@ function askCustomer() {
                 askToContinue();
             } else{
                 stock = stock - quantity;
-                toPay = price * quantity;
+                var toPayNoRound = price * quantity;
+                toPay = Math.ceil(toPayNoRound*100)/100;
                 connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity : stock, product_sales : productSales + toPay}, {item_id : itemId}], function(err){
                     if(err) throw(err);
                     console.log("\nTotal amount to pay: $"+ toPay + "\n");
