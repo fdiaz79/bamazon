@@ -3,6 +3,6 @@
 This app has 3 main applications:
 
 * Customer Aplication, accesible with _node bamazonCustomer.js_ :
-![Customer App](/images/customerApp.png)
+![Customer App](/images/customerApp.PNG)
 
 
