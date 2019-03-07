@@ -1,6 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var cTable = require("console.table");
+var colors=require("colors/safe");
 var _ = require("lodash");
 var fuzzy = require("fuzzy");
 
@@ -19,7 +20,7 @@ var departmentArray = [];
 
 connection.connect( err => {
     if(err) throw(err);
-    console.log("\n************ WELCOME TO BAMAZON ************");
+    console.log("\n************ WELCOME TO "+ colors.rainbow("BAMAZON")+" ************");
     mainManagerMenu();    
 });
 
@@ -50,13 +51,8 @@ function products(condition){
     connection.query("SELECT * FROM products"+condition, (err, results) => {
         if(err) throw(err);
         var table = cTable.getTable(results);
-        console.log("\n************* List of Products ************* \n");
+        console.log(colors.bgGreen("\n************* List of Products ************* \n"));
         console.log(table);
-        // console.log("Code | Product | Price | Available stock");
-        // for (var i = 0; i < results.length; i++){
-        //     console.log(results[i].item_id + " | " + results[i].product_name + " | $" + results[i].price + " | " + results[i].stock_quantity);
-        // }
-        // console.log("\n*************************\n");
         mainManagerMenu();
     });
 };
@@ -122,7 +118,7 @@ function addInventory(){
     ]).then( answer => {
        connection.query("UPDATE products SET stock_quantity = stock_quantity + ? WHERE product_name = ?", [answer.qtyToAdd, answer.itemToAdd], (err, results) => {
             if(err) throw(err);
-            console.log("\n"+results.affectedRows + " product quantity added.\n");
+            console.log(colors.green("\n"+results.affectedRows + " product quantity added.\n"));
             mainManagerMenu();
         })
     });
@@ -197,14 +193,14 @@ function newProduct(){
             stock_quantity : quantity
         }, (err, results) => {
             if(err) throw(err);
-            console.log("\n"+results.affectedRows + " product quantity added.\n");
+            console.log(colors.green("\n"+results.affectedRows + " product quantity added.\n"));
             mainManagerMenu();
         })
     });
 };
 
 function goodbye(){
-    console.log("\nThank you for using BAMAZON - Manager Application. Come back soon.\n");
+    console.log("\nThank you for using "+ colors.rainbow("BAMAZON")+" - Manager Application. Come back soon.\n");
     connection.end();
 };
 

@@ -1,10 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var cTable = require("console.table");
-// var _ = require("lodash");
-// var fuzzy = require("fuzzy");
-
-// inquirer.registerPrompt('autocomplete', require('./node_modules/inquirer-autocomplete-prompt/index'));
+var colors=require("colors/safe");
 
 var connection = mysql.createConnection({
     host : "localhost",
@@ -16,7 +13,7 @@ var connection = mysql.createConnection({
 
 connection.connect( err => {
     if(err) throw(err);
-    console.log("\n************ WELCOME TO BAMAZON ************");
+    console.log("\n************ WELCOME TO "+ colors.rainbow("BAMAZON")+" ************");
     
     supervisorMenu();    
 });
@@ -51,14 +48,14 @@ function newDepartment(){
         var name = answer.departmentToCreate;
         connection.query("INSERT INTO departments SET ?",{department_name : name}, (err, results) => {
             if(err) throw(err);
-            console.log("\n"+results.affectedRows + " department added.\n");
+            console.log(colors.green("\n"+results.affectedRows + " department added.\n"));
             supervisorMenu();
         })
     });
 };
 
 function salesByDepartment() {
-    console.log("\n********** Total Sales by Department **********\n")
+    console.log(colors.bgGreen("\n********** Total Sales by Department **********\n"))
     connection.query("SELECT departments.department_id, departments.department_name, departments.over_head_costs,"+
     "SUM(products.product_sales) AS department_sales FROM departments LEFT JOIN products"+
     " ON departments.department_name=products.department_name GROUP BY department_name", (err, results) => {
@@ -77,6 +74,6 @@ function salesByDepartment() {
 
 
 function goodbye(){
-    console.log("\nThank you for using BAMAZON - Supervisor Application. Come back soon.\n");
+    console.log("\nThank you for using "+ colors.rainbow("BAMAZON")+" - Supervisor Application. Come back soon.\n");
     connection.end();
 };

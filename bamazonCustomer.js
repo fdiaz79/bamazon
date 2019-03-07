@@ -1,6 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var cTable = require("console.table");
+var colors=require("colors/safe");
 
 var connection = mysql.createConnection({
     host : "localhost",
@@ -22,7 +23,7 @@ function displayStock() {
         for (var i = 0; i < results.length; i++){
             productIdArr.push(results[i].item_id);            
         }
-        console.log("\n************ WELCOME TO BAMAZON ************");
+        console.log("\n************ WELCOME TO "+ colors.rainbow("BAMAZON")+" ************");
         console.log("\n************* List of Products *************\n");
         var table = cTable.getTable(results);
         console.log(table);
@@ -53,11 +54,11 @@ function askCustomer() {
             }
         }
         if(isNaN(itemId) || idNotFound) {
-            console.log("\nUnknown Item. Please select one code from the list.\n");
+            console.log(colors.red.underline.bold("\nUnknown Item. Please select one code from the list.\n"));
             return displayStock();
         };
         if(isNaN(quantity)){
-            console.log("\nPlease enter a numeric value for the quantity");
+            console.log(colors.red.underline.bold("\nPlease enter a numeric value for the quantity"));
             return displayStock();
         };
         connection.query("SELECT * FROM products WHERE item_id = ?", itemId, function(err, results) {
@@ -66,7 +67,7 @@ function askCustomer() {
             var price = results[0].price;
             var productSales = results[0].product_sales;
             if (quantity > stock) {
-                console.log("\nInsufficient inventory, please check again later\n");
+                console.log(colors.red.underline.bold("\nInsufficient inventory, please check again later\n"));
                 askToContinue();
             } else{
                 stock = stock - quantity;
@@ -74,7 +75,7 @@ function askCustomer() {
                 toPay = Math.ceil(toPayNoRound*100)/100;
                 connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity : stock, product_sales : productSales + toPay}, {item_id : itemId}], function(err){
                     if(err) throw(err);
-                    console.log("\nTotal amount to pay: $"+ toPay + "\n");
+                    console.log(colors.green("\nTotal amount to pay: $"+ toPay + "\n"));
                     askToContinue();
                 });
             };               
@@ -94,7 +95,7 @@ function askToContinue() {
         if(answer.continue){
             displayStock();
         } else{
-            console.log("\nThank you for using BAMAZON, your CLI-retail Store!!! Come back soon.\n");
+            console.log("\nThank you for using "+ colors.rainbow("BAMAZON")+", your CLI-retail Store!!! Come back soon.\n");
             connection.end();
         }
     });
