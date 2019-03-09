@@ -51,11 +51,3 @@ To works properly, **BAMAZON Store** requires the following node modules:
 * **inquirer-autocomplete-prompt, fuzzy and lodash** these three modules interatc to generate lists of possible inputs for the user.
 
 Just run npm install in the folder your app will be residing, to install all the dependencies needed.
-
-
-
-
-
-
-
-
